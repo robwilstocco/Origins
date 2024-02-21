@@ -1,4 +1,5 @@
 import React from "react";
+import Origins from '/Origins_logo.png'
 export default () => {
   return (
     <nav className="bg-gray-800">
@@ -58,7 +59,7 @@ export default () => {
             <div className="flex flex-shrink-0 items-center">
               <img
                 className="h-8 w-auto bg-white rounded-full"
-                src="/Origins_logo.png"
+                src={Origins}
                 alt="Your Company"
               />
             </div>
