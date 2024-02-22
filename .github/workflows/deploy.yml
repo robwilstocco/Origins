@@ -16,5 +16,6 @@ jobs:
       - name: Run Deploy
         run: |
           git remote -v
+          git config user.name
           npm install
           npm run deploy
