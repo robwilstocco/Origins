@@ -17,9 +17,6 @@ jobs:
           MY_NAME: robertwilson
         run: |
           git config --global user.email $MY_EMAIL
-          git config --global user.name $MY_NAME  
-          
-      - name: Run Deploy
-        run: |
+          git config --global user.name $MY_NAME
           npm install
           npm run deploy
