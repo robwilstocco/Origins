@@ -11,13 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy
-        env:
-          MY_EMAIL: robwilstocco@gmail.com
-          MY_NAME: robertwilson
+      - name: Deploy        
         run: |
           git config --global url.ssh://git@github.com:robwilstocco/Origins.git
-          git config --global user.email $MY_EMAIL
-          git config --global user.name $MY_NAME
           npm install
           npm run deploy
