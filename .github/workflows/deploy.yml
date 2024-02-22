@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: development
+      name: github-pages
       url: https://robwilstocco.github.io/Origins/
     steps:
       - name: Checkout
