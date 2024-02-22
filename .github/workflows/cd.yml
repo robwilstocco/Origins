@@ -16,7 +16,7 @@ jobs:
           MY_EMAIL: robwilstocco@gmail.com
           MY_NAME: robertwilson
         run: |
-          git config --global url.ssh://git@github.com/
+          git config --global url.ssh://git@github.com:robwilstocco/Origins.git
           git config --global user.email $MY_EMAIL
           git config --global user.name $MY_NAME
           npm install
