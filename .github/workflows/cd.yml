@@ -13,6 +13,5 @@ jobs:
 
       - name: Deploy        
         run: |
-          git config --global url.ssh://git@github.com:robwilstocco/Origins.git
           npm install
           npm run deploy
