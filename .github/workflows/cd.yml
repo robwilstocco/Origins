@@ -7,6 +7,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest 
+    environment:
+      name: prod
+      url: https://robwilstocco.github.io/Origins
     steps:
       - uses: actions/checkout@v3
       - name: Run Deploy
