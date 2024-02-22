@@ -7,9 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: https://robwilstocco.github.io/Origins/
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,8 +14,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-      - name: Run Deploy
-        run: |
-          npm install
-          npm run deploy
+          publish_branch: main
+      # - name: Run Deploy
+      #   run: |
+      #     npm install
+      #     npm run deploy
