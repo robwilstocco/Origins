@@ -12,9 +12,11 @@ export default () => {
       >
         Nova Árvore
       </button>
-      <button className="bg-gray-800 text-2xl text-gray-300 hover:bg-gray-700 rounded-md mx-auto w-60 h-20">
-        <Link to="/origins/tree">Editar</Link>
-      </button>
+      <Link to="/origins/tree" className="self-center">
+        <button className="bg-gray-800 text-2xl text-gray-300 hover:bg-gray-700 rounded-md mx-auto w-60 h-20">
+          Editar
+        </button>
+      </Link>
       {showModal ? <Modal visible={setShowModal} /> : null}
     </div>
   );

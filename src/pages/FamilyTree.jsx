@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -13,29 +13,29 @@ import "reactflow/dist/style.css";
 let id = 2;
 const getId = () => `${id++}`;
 
-const initialNodes = [
-  {
-    id: "1",
-    position: { x: 0, y: 0 },
-    className: "light",
-    style: { backgroundColor: "rgba(15, 2, 65, 0.2)", width: 170, height: 140 },
-  },
-  {
-    id: "1a",
-    data: { label: "Wilson" },
-    position: { x: 10, y: 10 },
-    parentNode: "1",
-    extent: "parent",
-  },
-  {
-    id: "1b",
-    data: { label: "Zelia" },
-    position: { x: 10, y: 90 },
-    parentNode: "1",
-    extent: "parent",
-    type: "output",
-  },
-];
+// const initialNodes = [
+//   {
+//     id: "1",
+//     position: { x: 0, y: 0 },
+//     className: "light",
+//     style: { backgroundColor: "rgba(15, 2, 65, 0.2)", width: 170, height: 140 },
+//   },
+//   {
+//     id: "1a",
+//     data: { label: "Wilson" },
+//     position: { x: 10, y: 10 },
+//     parentNode: "1",
+//     extent: "parent",
+//   },
+//   {
+//     id: "1b",
+//     data: { label: "Zelia" },
+//     position: { x: 10, y: 90 },
+//     parentNode: "1",
+//     extent: "parent",
+//     type: "output",
+//   },
+// ];
 
 const initialEdges = [
   { id: "1a-1b", source: "1a", target: "1b", animated: true },
@@ -44,9 +44,16 @@ const initialEdges = [
 const AddNodeOnEdgeDrop = () => {
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [initialNodes,setInitialNode] = useState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { screenToFlowPosition } = useReactFlow();
+  useEffect(()=>{
+    const saved = localStorage.getItem('initialNode')
+    setInitialNode(JSON.parse(saved))
+    setNodes(JSON.parse(saved))
+  },[])
+
 
   const onConnect = useCallback((params) => {
     // reset the start node on connections
