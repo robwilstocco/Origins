@@ -17,7 +17,7 @@ export default () => {
           Editar
         </button>
       </Link>
-      {showModal ? <Modal visible={setShowModal} /> : null}
+      {showModal ? <Modal visible={setShowModal}/> : null}
     </div>
   );
 };

@@ -9,67 +9,51 @@ import ReactFlow, {
   Background,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import Modal from "../components/Modal/Modal";
 
 let id = 2;
 const getId = () => `${id++}`;
-
-// const initialNodes = [
-//   {
-//     id: "1",
-//     position: { x: 0, y: 0 },
-//     className: "light",
-//     style: { backgroundColor: "rgba(15, 2, 65, 0.2)", width: 170, height: 140 },
-//   },
-//   {
-//     id: "1a",
-//     data: { label: "Wilson" },
-//     position: { x: 10, y: 10 },
-//     parentNode: "1",
-//     extent: "parent",
-//   },
-//   {
-//     id: "1b",
-//     data: { label: "Zelia" },
-//     position: { x: 10, y: 90 },
-//     parentNode: "1",
-//     extent: "parent",
-//     type: "output",
-//   },
-// ];
 
 const initialEdges = [
   { id: "1a-1b", source: "1a", target: "1b", animated: true },
 ];
 
 const AddNodeOnEdgeDrop = () => {
+
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
   const [initialNodes,setInitialNode] = useState([]);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalType, setModalType] = useState('children')
   const { screenToFlowPosition } = useReactFlow();
+
   useEffect(()=>{
     const saved = localStorage.getItem('initialNode')
     setInitialNode(JSON.parse(saved))
     setNodes(JSON.parse(saved))
   },[])
 
-
   const onConnect = useCallback((params) => {
     // reset the start node on connections
     connectingNodeId.current = null;
     setEdges((eds) => addEdge(params, eds));
+    console.log('teste')
   }, []);
 
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
   }, []);
 
-  const onConnectEnd = useCallback(
+  const onConnectEnd =  useCallback(
     (event) => {
       if (!connectingNodeId.current) return;
-
+      setOpenModal(true);
+      
+      //caso seja um parceiro
       if (connectingNodeId.current.slice(-1) === "a") {
+        setModalType('partner');
         const newNode = {
           id: connectingNodeId.current.slice(0, -1) + "b",
           data: { label: "teste 2" },
@@ -109,9 +93,11 @@ const AddNodeOnEdgeDrop = () => {
 
       const targetIsPane = event.target.classList.contains("react-flow__pane");
 
+      //caso seja um nó de Filho
       if (targetIsPane) {
         // we need to remove the wrapper bounds, in order to get the correct position
         const id = getId();
+        setModalType('children')
         const newGroup = {
           id,
           position: screenToFlowPosition({
@@ -160,7 +146,8 @@ const AddNodeOnEdgeDrop = () => {
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
-    </div>
+      {openModal && <Modal visible={setOpenModal} type={modalType} handleNodes={setNodes} handleEdges={setEdges}/>}
+    </div> 
   );
 };
 

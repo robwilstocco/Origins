@@ -1,40 +1,75 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function Modal({ visible }) {
+export default function Modal({
+  visible,
+  type = "initial",
+  handleNodes = null,
+  handleEdges = null,
+}) {
   const [name, setName] = useState("");
+  let message = "";
+  switch (type) {
+    case "partner":
+      message = "Digite o nome do parceiro(a): ";
+      break;
+    case "children":
+      message = "Digite o nome do filho(a): ";
+      break;
+    default:
+      message = "Digite o nome do parente inicial: ";
+      break;
+  }
+  const notify = () => {
+    toast.error("Preencha o campo nome !", {
+      position: "bottom-right",
+      theme: "colored",
+    });
+  };
 
   function createTree(name) {
-    const initialNode = [
-      {
-        id: "1",
-        position: { x: 0, y: 0 },
-        className: "light",
-        style: {
-          backgroundColor: "rgba(15, 2, 65, 0.2)",
-          width: 170,
-          height: 140,
-        },
-      },
-      {
-        id: "1a",
-        data: { label: name },
-        position: { x: 10, y: 10 },
-        parentNode: "1",
-        extent: "parent",
-      },
-    ];
-
-    initialNode.push({
-      id: "1b",
-      data: { label: "Zelia" },
-      position: { x: 10, y: 90 },
-      parentNode: "1",
-      extent: "parent",
-      type: "output",
-    });
-
-    localStorage.setItem("initialNode", JSON.stringify(initialNode));
+    if (name === "") return notify();    
+    let initialNode = [];
+    switch (type) {
+      case "partner":
+        //cria parceiro
+        break;
+      case "children":
+        //cria filho
+        break;
+      default:
+        initialNode = [
+          {
+            id: "1",
+            position: { x: 0, y: 0 },
+            className: "light",
+            style: {
+              backgroundColor: "rgba(15, 2, 65, 0.2)",
+              width: 170,
+              height: 140,
+            },
+          },
+          {
+            id: "1a",
+            data: { label: name },
+            position: { x: 10, y: 10 },
+            parentNode: "1",
+            extent: "parent",
+          },
+        ];
+        initialNode.push({
+          id: "1b",
+          data: { label: "Zelia" },
+          position: { x: 10, y: 90 },
+          parentNode: "1",
+          extent: "parent",
+          type: "output",
+        });
+        localStorage.setItem("initialNode", JSON.stringify(initialNode));
+        window.location.href = "/origins/tree";
+        break;
+    }
   }
 
   return (
@@ -61,7 +96,7 @@ export default function Modal({ visible }) {
                 htmlFor="name"
                 className="my-4 text-blueGray-500 text-lg leading-relaxed"
               >
-                Digite o nome do parente inicial:
+                {message}
               </label>
               <div className="relative mt-2 rounded-md shadow-sm">
                 <input
@@ -84,20 +119,19 @@ export default function Modal({ visible }) {
               >
                 Close
               </button>
-              <Link to="/origins/tree">
-                <button
-                  className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                  type="button"
-                  onClick={() => createTree(name)}
-                >
-                  Save Changes
-                </button>
-              </Link>
+              <button
+                className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                type="button"
+                onClick={() => createTree(name)}
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
       </div>
       <div className="opacity-35 fixed inset-0 z-40 bg-black"></div>
+      <ToastContainer />
     </>
   );
 }
