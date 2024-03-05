@@ -5,8 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 export default function Modal({
   visible,
   type = "initial",
-  handleNodes = null,
-  handleEdges = null,
+  handleFilled,
+  handleName
 }) {
   const [name, setName] = useState("");
   let message = "";
@@ -29,14 +29,20 @@ export default function Modal({
   };
 
   function createTree(name) {
-    if (name === "") return notify();    
+    if (name === "") return notify();
     let initialNode = [];
     switch (type) {
       case "partner":
         //cria parceiro
+        handleFilled(true);
+        handleName(name);
+        visible(false);
         break;
       case "children":
         //cria filho
+        handleFilled(true);
+        handleName(name);
+        visible(false)
         break;
       default:
         initialNode = [
@@ -58,14 +64,6 @@ export default function Modal({
             extent: "parent",
           },
         ];
-        initialNode.push({
-          id: "1b",
-          data: { label: "Zelia" },
-          position: { x: 10, y: 90 },
-          parentNode: "1",
-          extent: "parent",
-          type: "output",
-        });
         localStorage.setItem("initialNode", JSON.stringify(initialNode));
         window.location.href = "/origins/tree";
         break;

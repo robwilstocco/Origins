@@ -14,49 +14,49 @@ import Modal from "../components/Modal/Modal";
 let id = 2;
 const getId = () => `${id++}`;
 
-const initialEdges = [
-  { id: "1a-1b", source: "1a", target: "1b", animated: true },
-];
-
 const AddNodeOnEdgeDrop = () => {
-
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
-  const [initialNodes,setInitialNode] = useState([]);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [openModal, setOpenModal] = useState(false);
-  const [modalType, setModalType] = useState('children')
+  const [modalType, setModalType] = useState("children");
+  const [filled, setFilled] = useState(false);
+  const [lastEvent, setLastEvent] = useState(null);
+  const [name, setName] = useState("");
   const { screenToFlowPosition } = useReactFlow();
 
-  useEffect(()=>{
-    const saved = localStorage.getItem('initialNode')
-    setInitialNode(JSON.parse(saved))
-    setNodes(JSON.parse(saved))
-  },[])
+  useEffect(() => {
+    const saved = localStorage.getItem("initialNode");
+    setNodes(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    if (lastEvent !== null && filled === true) {
+      onConnectEnd(lastEvent, name);
+      setFilled(false);
+    }
+  }, [filled]);
 
   const onConnect = useCallback((params) => {
     // reset the start node on connections
     connectingNodeId.current = null;
     setEdges((eds) => addEdge(params, eds));
-    console.log('teste')
   }, []);
 
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
   }, []);
 
-  const onConnectEnd =  useCallback(
-    (event) => {
+  const onConnectEnd = useCallback(
+    (event, name) => {
       if (!connectingNodeId.current) return;
-      setOpenModal(true);
-      
       //caso seja um parceiro
       if (connectingNodeId.current.slice(-1) === "a") {
-        setModalType('partner');
+        setModalType("partner");
         const newNode = {
           id: connectingNodeId.current.slice(0, -1) + "b",
-          data: { label: "teste 2" },
+          data: { label: name },
           position: { x: 10, y: 90 },
           parentNode: connectingNodeId.current.slice(0, -1),
           extent: "parent",
@@ -95,9 +95,8 @@ const AddNodeOnEdgeDrop = () => {
 
       //caso seja um nó de Filho
       if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
+        // we need to remove the wrapper bounds, in order to get the correct position        
         const id = getId();
-        setModalType('children')
         const newGroup = {
           id,
           position: screenToFlowPosition({
@@ -113,7 +112,7 @@ const AddNodeOnEdgeDrop = () => {
         };
         const newNode = {
           id: id + "a",
-          data: { label: "teste" },
+          data: { label: name },
           position: { x: 10, y: 10 },
           parentNode: id,
           extent: "parent",
@@ -130,6 +129,16 @@ const AddNodeOnEdgeDrop = () => {
     [screenToFlowPosition],
   );
 
+  const teste = (event) => {
+    if(event.target.classList.contains("react-flow__pane")){
+      setModalType("children");
+    }else{
+      setModalType("partner");
+    }
+    setOpenModal(true);
+    setLastEvent(event);
+  };
+
   return (
     <div style={{ width: "100vw", height: "100vh" }} ref={reactFlowWrapper}>
       <ReactFlow
@@ -139,15 +148,23 @@ const AddNodeOnEdgeDrop = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
+        onConnectEnd={teste}
+        // onConnectEnd={onConnectEnd}
         fitView
         attributionPosition="top-right"
       >
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
-      {openModal && <Modal visible={setOpenModal} type={modalType} handleNodes={setNodes} handleEdges={setEdges}/>}
-    </div> 
+      {openModal && (
+        <Modal
+          visible={setOpenModal}
+          type={modalType}
+          handleFilled={setFilled}
+          handleName={setName}
+        />
+      )}
+    </div>
   );
 };
 
