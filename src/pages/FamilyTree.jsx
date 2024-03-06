@@ -10,7 +10,9 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import Modal from "../components/Modal/Modal";
+import ToolBox from "../components/ToolBox/ToolBox";
 
+//ajustar id para acompanhar o localstorage
 let id = 2;
 const getId = () => `${id++}`;
 
@@ -27,14 +29,18 @@ const AddNodeOnEdgeDrop = () => {
   const { screenToFlowPosition } = useReactFlow();
 
   useEffect(() => {
-    const saved = localStorage.getItem("initialNode");
-    setNodes(JSON.parse(saved));
+    const savedNodes = localStorage.getItem("nodes");
+    const savedEdges = localStorage.getItem("edges");
+    setNodes(JSON.parse(savedNodes));
+    setEdges(JSON.parse(savedEdges));
   }, []);
 
   useEffect(() => {
     if (lastEvent !== null && filled === true) {
       onConnectEnd(lastEvent, name);
       setFilled(false);
+      localStorage.setItem("nodes", JSON.stringify(nodes));
+      localStorage.setItem("edges", JSON.stringify(edges));
     }
   }, [filled]);
 
@@ -90,12 +96,10 @@ const AddNodeOnEdgeDrop = () => {
             : eds;
         });
       }
-
       const targetIsPane = event.target.classList.contains("react-flow__pane");
-
       //caso seja um nó de Filho
       if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position        
+        // we need to remove the wrapper bounds, in order to get the correct position
         const id = getId();
         const newGroup = {
           id,
@@ -117,22 +121,19 @@ const AddNodeOnEdgeDrop = () => {
           parentNode: id,
           extent: "parent",
         };
-
-        setNodes((nds) => {
-          return nds.concat(newGroup, newNode);
-        });
+        setNodes((nds) => nds.concat(newGroup, newNode));
         setEdges((eds) =>
           eds.concat({ id, source: connectingNodeId.current, target: id }),
         );
-      }
+      }      
     },
     [screenToFlowPosition],
   );
 
   const teste = (event) => {
-    if(event.target.classList.contains("react-flow__pane")){
+    if (event.target.classList.contains("react-flow__pane")) {
       setModalType("children");
-    }else{
+    } else {
       setModalType("partner");
     }
     setOpenModal(true);
@@ -140,7 +141,8 @@ const AddNodeOnEdgeDrop = () => {
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }} ref={reactFlowWrapper}>
+    <div style={{ width: "100vw", height: "89vh" }} ref={reactFlowWrapper}>
+      <ToolBox />
       <ReactFlow
         nodes={nodes}
         edges={edges}

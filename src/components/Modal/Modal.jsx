@@ -64,7 +64,9 @@ export default function Modal({
             extent: "parent",
           },
         ];
-        localStorage.setItem("initialNode", JSON.stringify(initialNode));
+        localStorage.setItem("nodes", JSON.stringify(initialNode));
+        localStorage.setItem("edges", '[]');
+        localStorage.setItem("lastId", '1');
         window.location.href = "/origins/tree";
         break;
     }
@@ -115,14 +117,14 @@ export default function Modal({
                 type="button"
                 onClick={() => visible(false)}
               >
-                Close
+                Fechar
               </button>
               <button
                 className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={() => createTree(name)}
               >
-                Save Changes
+                Salvar
               </button>
             </div>
           </div>
