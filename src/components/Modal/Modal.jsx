@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -67,7 +68,7 @@ export default function Modal({
         localStorage.setItem("nodes", JSON.stringify(initialNode));
         localStorage.setItem("edges", '[]');
         localStorage.setItem("nextId", '2');
-        window.location.href = "/origins/tree";
+        // window.location.href = "/origins/tree";
         break;
     }
   }
@@ -119,13 +120,19 @@ export default function Modal({
               >
                 Fechar
               </button>
-              <button
+              <Link className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                to="/origins/tree"
+                onClick={()=> createTree(name)}
+              >
+              Salvar
+              </Link>
+              {/* <button
                 className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={() => createTree(name)}
               >
                 Salvar
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
