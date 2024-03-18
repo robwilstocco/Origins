@@ -66,7 +66,7 @@ export default function Modal({
         ];
         localStorage.setItem("nodes", JSON.stringify(initialNode));
         localStorage.setItem("edges", '[]');
-        localStorage.setItem("lastId", '1');
+        localStorage.setItem("nextId", '2');
         window.location.href = "/origins/tree";
         break;
     }

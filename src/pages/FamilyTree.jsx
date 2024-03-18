@@ -13,34 +13,41 @@ import Modal from "../components/Modal/Modal";
 import ToolBox from "../components/ToolBox/ToolBox";
 
 //ajustar id para acompanhar o localstorage
-let id = 2;
+let id = 0;
 const getId = () => `${id++}`;
 
 const AddNodeOnEdgeDrop = () => {
+  //ReactFlow variables
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const [modalType, setModalType] = useState("children");
-  const [filled, setFilled] = useState(false);
-  const [lastEvent, setLastEvent] = useState(null);
-  const [name, setName] = useState("");
   const { screenToFlowPosition } = useReactFlow();
 
+  const [openModal, setOpenModal] = useState(false);
+  const [modalType, setModalType] = useState("children");
+  const [name, setName] = useState("");
+  const [filled, setFilled] = useState(false);
+  const [lastEvent, setLastEvent] = useState(null);
+
+  //Load Initial Values
   useEffect(() => {
     const savedNodes = localStorage.getItem("nodes");
     const savedEdges = localStorage.getItem("edges");
+    id = Number(localStorage.getItem('nextId'));
     setNodes(JSON.parse(savedNodes));
     setEdges(JSON.parse(savedEdges));
   }, []);
 
+  //Updates localStorage when a new person is add
   useEffect(() => {
     if (lastEvent !== null && filled === true) {
       onConnectEnd(lastEvent, name);
       setFilled(false);
       localStorage.setItem("nodes", JSON.stringify(nodes));
       localStorage.setItem("edges", JSON.stringify(edges));
+
+      if(modalType === 'children') localStorage.setItem("nextId", id.toString());
     }
   }, [filled]);
 
@@ -74,7 +81,6 @@ const AddNodeOnEdgeDrop = () => {
         setNodes((nds) => {
           nds.map((node) => {
             if (node.id === newNode.id) {
-              console.log("existe");
               isValid = false;
             }
           });
@@ -95,6 +101,7 @@ const AddNodeOnEdgeDrop = () => {
               })
             : eds;
         });
+        return;
       }
       const targetIsPane = event.target.classList.contains("react-flow__pane");
       //caso seja um nó de Filho
@@ -125,7 +132,7 @@ const AddNodeOnEdgeDrop = () => {
         setEdges((eds) =>
           eds.concat({ id, source: connectingNodeId.current, target: id }),
         );
-      }      
+      }
     },
     [screenToFlowPosition],
   );
