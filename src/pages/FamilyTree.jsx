@@ -64,7 +64,7 @@ const AddNodeOnEdgeDrop = () => {
   const onConnectEnd = useCallback(
     (event, name) => {
       if (!connectingNodeId.current) return;
-      //caso seja um parceiro
+      //if the node is a partner
       if (connectingNodeId.current.slice(-1) === "a") {
         setModalType("partner");
         const newNode = {
@@ -104,9 +104,8 @@ const AddNodeOnEdgeDrop = () => {
         return;
       }
       const targetIsPane = event.target.classList.contains("react-flow__pane");
-      //caso seja um nó de Filho
+      //if the node is a children
       if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
         const id = getId();
         const newGroup = {
           id,
@@ -137,7 +136,7 @@ const AddNodeOnEdgeDrop = () => {
     [screenToFlowPosition],
   );
 
-  const teste = (event) => {
+  const changeModalType = (event) => {
     if (event.target.classList.contains("react-flow__pane")) {
       setModalType("children");
     } else {
@@ -157,8 +156,7 @@ const AddNodeOnEdgeDrop = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectStart={onConnectStart}
-        onConnectEnd={teste}
-        // onConnectEnd={onConnectEnd}
+        onConnectEnd={changeModalType}
         fitView
         attributionPosition="top-right"
       >
