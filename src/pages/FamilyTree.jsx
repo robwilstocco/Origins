@@ -51,12 +51,6 @@ const AddNodeOnEdgeDrop = () => {
     }
   }, [filled]);
 
-  const onConnect = useCallback((params) => {
-    // reset the start node on connections
-    connectingNodeId.current = null;
-    setEdges((eds) => addEdge(params, eds));
-  }, []);
-
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
   }, []);
@@ -154,7 +148,6 @@ const AddNodeOnEdgeDrop = () => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onConnectStart={onConnectStart}
         onConnectEnd={changeModalType}
         fitView
