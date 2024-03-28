@@ -7,14 +7,65 @@ import ReactFlow, {
   ReactFlowProvider,
   Controls,
   Background,
+  getViewportForBounds,
+  getNodesBounds,
 } from "reactflow";
+import { toPng } from "html-to-image";
+import dagre from "dagre";
 import "reactflow/dist/style.css";
 import Modal from "../components/Modal/Modal";
 import ToolBox from "../components/ToolBox/ToolBox";
 
-//ajustar id para acompanhar o localstorage
 let id = 0;
 const getId = () => `${id++}`;
+
+//download
+const imageWidth = screen.width;
+const imageHeight = screen.height;
+function downloadImage(dataUrl) {
+  const a = document.createElement("a");
+  a.setAttribute("download", "OriginsFamilyTree.png");
+  a.setAttribute("href", dataUrl);
+  a.click();
+}
+
+//Organize
+const nodeWidth = 170;
+const nodeHeight = 140;
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const getLayoutedElements = (nodes, edges) => {
+  dagreGraph.setGraph({ rankdir: "TB" });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    console.log(node)
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = "top";
+    node.sourcePosition = "bottom";
+
+    // We are shifting the dagre node position (anchor=center center) to the top left
+    // so it matches the React Flow node anchor point (top left).
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+
+    return node;
+  });
+
+  return { nodes, edges };
+};
 
 const AddNodeOnEdgeDrop = () => {
   //ReactFlow variables
@@ -34,7 +85,7 @@ const AddNodeOnEdgeDrop = () => {
   useEffect(() => {
     const savedNodes = localStorage.getItem("nodes");
     const savedEdges = localStorage.getItem("edges");
-    id = Number(localStorage.getItem('nextId'));
+    id = Number(localStorage.getItem("nextId"));
     setNodes(JSON.parse(savedNodes));
     setEdges(JSON.parse(savedEdges));
   }, []);
@@ -47,7 +98,8 @@ const AddNodeOnEdgeDrop = () => {
       localStorage.setItem("nodes", JSON.stringify(nodes));
       localStorage.setItem("edges", JSON.stringify(edges));
 
-      if(modalType === 'children') localStorage.setItem("nextId", id.toString());
+      if (modalType === "children")
+        localStorage.setItem("nextId", id.toString());
     }
   }, [filled]);
 
@@ -140,9 +192,50 @@ const AddNodeOnEdgeDrop = () => {
     setLastEvent(event);
   };
 
+  //handleDownload
+  const { getNodes } = useReactFlow();
+  const handleDownload = () => {
+    // we calculate a transform for the nodes so that all nodes are visible
+    // we then overwrite the transform of the `.react-flow__viewport` element
+    // with the style option of the html-to-image library
+    const nodesBounds = getNodesBounds(getNodes());
+    const transform = getViewportForBounds(
+      nodesBounds,
+      imageWidth,
+      imageHeight,
+      0.5,
+      3,
+    );
+
+    toPng(document.querySelector(".react-flow__viewport"), {
+      backgroundColor: "#fafafa",
+      width: imageWidth,
+      height: imageHeight,
+      style: {
+        width: imageWidth,
+        height: imageHeight,
+        transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+      },
+    }).then(downloadImage);
+  };
+
+  //handleOrganize
+  const handleOrganize = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+    );
+
+    setNodes([...layoutedNodes]);
+    setEdges([...layoutedEdges]);
+  }, [nodes, edges]);
+
   return (
     <div style={{ width: "100vw", height: "89vh" }} ref={reactFlowWrapper}>
-      <ToolBox />
+      <ToolBox
+        handleOrganize={handleOrganize}
+        handleDownload={handleDownload}
+      />
       <ReactFlow
         nodes={nodes}
         edges={edges}
