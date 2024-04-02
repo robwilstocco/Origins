@@ -69,13 +69,14 @@ const AddNodeOnEdgeDrop = () => {
   const connectingNodeId = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, getNodes } = useReactFlow();
 
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("children");
   const [name, setName] = useState("");
   const [filled, setFilled] = useState(false);
   const [lastEvent, setLastEvent] = useState(null);
+  
 
   //Load Initial Values
   useEffect(() => {
@@ -187,13 +188,8 @@ const AddNodeOnEdgeDrop = () => {
     setOpenModal(true);
     setLastEvent(event);
   };
-
-  //handleDownload
-  const { getNodes } = useReactFlow();
+  
   const handleDownload = () => {
-    // we calculate a transform for the nodes so that all nodes are visible
-    // we then overwrite the transform of the `.react-flow__viewport` element
-    // with the style option of the html-to-image library
     const nodesBounds = getNodesBounds(getNodes());
     const transform = getViewportForBounds(
       nodesBounds,
@@ -215,7 +211,6 @@ const AddNodeOnEdgeDrop = () => {
     }).then(downloadImage);
   };
 
-  //handleOrganize
   const handleOrganize = useCallback(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       nodes,

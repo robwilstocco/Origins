@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -7,10 +7,12 @@ export default function Modal({
   visible,
   type = "initial",
   handleFilled,
-  handleName
+  handleName,
 }) {
   const [name, setName] = useState("");
   let message = "";
+  let navigate = useNavigate()
+
   switch (type) {
     case "partner":
       message = "Digite o nome do parceiro(a): ";
@@ -22,54 +24,45 @@ export default function Modal({
       message = "Digite o nome do parente inicial: ";
       break;
   }
+
   const notify = () => {
-    toast.error("Preencha o campo nome !", {
+    toast.error("Preencha o campo nome!", {
       position: "bottom-right",
       theme: "colored",
     });
   };
 
-  function createTree(name) {
-    if (name === "") return notify();
-    let initialNode = [];
-    switch (type) {
-      case "partner":
-        //cria parceiro
-        handleFilled(true);
-        handleName(name);
-        visible(false);
-        break;
-      case "children":
-        //cria filho
-        handleFilled(true);
-        handleName(name);
-        visible(false)
-        break;
-      default:
-        initialNode = [
-          {
-            id: "1",
-            position: { x: 0, y: 0 },
-            className: "light",
-            style: {
-              backgroundColor: "rgba(15, 2, 65, 0.2)",
-              width: 170,
-              height: 140,
-            },
+  const addNode = (e,name) => {
+    e.preventDefault()
+    if (!name) return notify();
+    if (type === "partner" || type === "children") {
+      handleFilled(true);
+      handleName(name);
+      visible(false);
+    } else {
+      const initialNode = [
+        {
+          id: "1",
+          position: { x: 0, y: 0 },
+          className: "light",
+          style: {
+            backgroundColor: "rgba(15, 2, 65, 0.2)",
+            width: 170,
+            height: 140,
           },
-          {
-            id: "1a",
-            data: { label: name },
-            position: { x: 10, y: 10 },
-            parentNode: "1",
-            extent: "parent",
-          },
-        ];
-        localStorage.setItem("nodes", JSON.stringify(initialNode));
-        localStorage.setItem("edges", '[]');
-        localStorage.setItem("nextId", '2');
-        // window.location.href = "/origins/tree";
-        break;
+        },
+        {
+          id: "1a",
+          data: { label: name },
+          position: { x: 10, y: 10 },
+          parentNode: "1",
+          extent: "parent",
+        },
+      ];
+      localStorage.setItem("nodes", JSON.stringify(initialNode));
+      localStorage.setItem("edges", "[]");
+      localStorage.setItem("nextId", "2");
+      navigate('/origins/tree')
     }
   }
 
@@ -120,19 +113,13 @@ export default function Modal({
               >
                 Fechar
               </button>
-              <Link className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                to="/origins/tree"
-                onClick={()=> createTree(name)}
-              >
-              Salvar
-              </Link>
-              {/* <button
+              <Link
                 className="bg-gray-800 text-white hover:bg-gray-700 font-bold uppercase text-sm px-6 py-3 rounded shadow outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                type="button"
-                onClick={() => createTree(name)}
+                to="/origins/tree"
+                onClick={(e) => addNode(e,name)}
               >
                 Salvar
-              </button> */}
+              </Link>
             </div>
           </div>
         </div>
