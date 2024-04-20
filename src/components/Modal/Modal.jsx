@@ -40,6 +40,7 @@ export default function Modal({
       handleName(name);
       visible(false);
     } else {
+      localStorage.clear();
       const initialNode = [
         {
           id: "1",

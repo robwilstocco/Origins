@@ -36,6 +36,7 @@ const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const getLayoutedElements = (nodes, edges) => {
+  console.log(nodes)
   dagreGraph.setGraph({ rankdir: "TB" });
 
   nodes.forEach((node) => {
@@ -219,6 +220,9 @@ const AddNodeOnEdgeDrop = () => {
 
     setNodes([...layoutedNodes]);
     setEdges([...layoutedEdges]);
+
+    localStorage.setItem("nodes", JSON.stringify(nodes));
+    localStorage.setItem("edges", JSON.stringify(edges));
   }, [nodes, edges]);
 
   return (
