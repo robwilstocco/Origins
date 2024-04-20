@@ -7,6 +7,7 @@
 
 ## Descrição
 <p>Projeto criado com o objetivo de criar árvores genealógicas de uma maneira simples e prática, utilizando React Flow.</p>
+<img src="https://github.com/robwilstocco/origins/blob/main/public/Tree_example.png" />
 <a href="https://robwilstocco.github.io/origins/">Você pode visualizar o projeto no ar clicando aqui</a>
 
 <h2>:grinning: Como utilizar</h2>
